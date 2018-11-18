@@ -1,0 +1,129 @@
+Input for algorithm
+
+// input type introduction
+1. RArea   -- An restricted area for a drone
+			  And it is in form like circle, having
+			  position and radius.
+			  RArea.x - x-position of an restricted area.
+			  RArea.y - y-position of an restricted area.
+			  RArea.r - radius of the restricted area.
+
+2. Vertice -- A place a drone need to deliver pacakge
+			  or the drone can stop by to recharge 
+			  and get new package. Each vertice has a position.
+			  Vertice.x x-position of an vertice.
+			  Vertice.y y-position of an vertice.
+// input type introduction ends
+
+// actual input
+1. allArea = {RArea1, RArea2, RArea3, ...} 
+		   -- collection of RArea
+		   -- They are all sorted base on the comparator
+		   	  // similar in java Syntax
+		   	  // public int compareTo(RArea other) {
+		   	  //	if(this.x equals other.x) {
+		   	  //		return this.y - other.y;
+		   	  //	} else {
+		   	  //		return this.x - other.x;
+		   	  //	}
+		   	  // }
+2. start   -- starting vertice of a drone
+
+3. end     -- ending vertice of a drone
+
+4. maxR    -- the max radius of RAreas in the collection allArea
+// input ends
+
+// expected output
+1. {Vertice1, Vertice2, Vertice3......}
+           -- a set of vertices make drone to 
+	          deliver the packag within minumum 
+	          mileage without going into restricted area
+// expected output ends
+
+CountrysideShortestPath(allArea, start, end)
+	pathToAvoidAllRArea = {} // now empty, may be added vertice 
+						  // means the paths of vertice required
+						  // to avoid all possible restricted area
+						  // on the way from start to end
+
+	// find possible RArea may intersect with flight line
+	allPossibleRArea = findAllPosible(allArea, start, end)
+
+	// get all RArea will intersect with flight line
+	allIntersected = findAllInterSection(allPossibleRArea, start, end)
+
+	// sort all of Intersection base on the order of
+	// when moving from start to end, 
+	// which intersection comes earlier, which comes later 
+	// Start --> intersection1 --> intersection2 --> intersection3 ... -> end
+	sortIntersection(allIntersected, start)
+
+	// for each intersected
+	// interStarting   -- starting of interesected line segment
+	// interEnding     -- ending of intersected line segment
+	// intersectedArea -- the RArea intersected with the line
+	for each interStarting, interEnding, intersectedArea in allIntersected
+		// path required to avoid current restriected area
+		pathToAvoidThisRArea = avoidThis(interStarting, 
+							interEnding, interSectedArea)
+		pathToAvoidAllRArea.append(pathToAvoidThisRArea)
+
+	return start + pathToAvoidAllArea + end
+
+findAllPosible(allArea, start, end)
+	pointStartIndex = binarySearch(start);
+	pointEndIndex = binarySearch(end);
+	possibleRArea = {}
+	when i from pointStartIndex to pointEndIndex
+		// the line segment from start to end
+		// expend to a rectangle [RecArea] by length of max radius
+		//of all the RArea
+		if coordinate(allArea[i].x, allArea[i].y) in RecArea
+			possibleRArea.add(allArea[i])
+	return possibleRArea
+
+findAllInterSection(allPosibleRArea, start, end)
+	// a tuple of
+	// (
+	// 	interStarting   -- starting of interesected line segment
+	// 	interEnding     -- ending of intersected line segment
+	//  intersectedArea -- the RArea intersected with the line
+	// )
+	// return a collection of the tuple above
+	// {
+	//	(interStarting1, interEnding1, interSectedArea1),
+	//	(interStarting2, interEnding2, interSectedArea2),
+	//	(interStarting3, interEnding3, interSectedArea3),
+	//  ......
+	// }
+	allInterSect = {}
+	for each rArea in allPosibleRArea:
+		if RArea intersect with lineSegment(start, end)
+			allInterSect.add(rArea)
+	return allInterSect
+
+
+	
+sortIntersection(allIntersected, startPoint)
+	// allIntersected is same Structure with 
+	// stuff returned by findAllInterSection
+	sort all tuple in Intersected this way
+
+	// <- interStart point nearest to start
+	start ->(interStart1, interEnding1, intersection1)-> 
+			... ->(....)-> ... ->(....)-> end
+	// interStart point furthest to start ->
+
+	// quick sort is good fo this
+	// java library's sort is enough for this
+	finish                         
+	
+
+avoidThis(interStarting, interEnding, interSectedArea)
+	// because a interSeactedArea as a circle
+	// can be expressed in x^2 + y^2 = r^2
+	// we can use this function to produce a 
+	// approximate circle vertices path to avoid the RArea
+	// waiting for detailed implementation in Java
+	return pathToAvoidThisRArea

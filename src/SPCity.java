@@ -1,6 +1,6 @@
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class SPCity {
 
@@ -74,7 +74,50 @@ public class SPCity {
 			System.out.printf("the path from %s to %s doesn't exist\n", start, end);
 			return result;
 		}
-		
 		// run the djikstra algorithm to get the result;
+
+		for(VerticeCity each : allPointsOfRoad.entrySet().getValue()) {
+			each.parent = null;
+			each.distance = Double.MIN_VALUE;
+		}
+		from.distance = 0;
+		PriorityQueue<VerticeCity> vertices = new PriorityQueue<>(allPointsOfRoad.size(), verticeCom);
+		while(true) {
+			VerticeCity curOne = vertices.poll();
+			if(curOne == null) break;
+			if(curOne.name.equals(to.name)) break;
+			for(VerticeCity each : curOne.neighbors) {
+				relax(curOne, each);
+			}
+		}
+
+		while(to != null) {
+			result.put(to);
+			to = to.parent;
+		}
+
+		return result;
+	}
+
+	public static Comparator<VerticeCity> verticeCom= new Comparator<VerticeCity>() {
+
+		@Override
+		public int compare(VerticeCity first, VerticeCity second){
+			return first.distance - second.distance;
+		}
+	}
+	private void relax(VerticeCity first, VerticeCity second) {
+		if(first.distance > second.distance + distance(first, second)) {
+				first.distance = second.distance + distance(first, second);
+				first.parent = second;
+		}
+	}	
+
+	private double distance(VerticeCity first, VerticeCity second) {
+		return Math.hypot(second.x - first.x, second.y - first.y);		
+	}
+
+	public static void main(String[] args) {
+		System.out.println("Hello world!");
 	}
 }

@@ -3,10 +3,7 @@ import java.util.ArrayList;
 
 public class Map {
 	ArrayList<RA> RArea = new ArrayList<RA>();
-	ArrayList<Line> lines = new ArrayList<Line>();
-	ArrayList<Arc> arcs = new ArrayList<Arc>();
-	Point station = new Point();
-
+	Vertice station = new Vertice(0, 0);
 	/**
 	 * Construct qnd initialize a Map length as 20
 	 * @param x the x coordinate of the center point
@@ -26,12 +23,5 @@ public class Map {
 		RA RestritedAread = new RA(x, y, radius);
 		RArea.add(RestritedAread);
 	}
-
-	public void addArc() {
-		
-	}
 	
-	public void addLine() {
-		
-	}
 }

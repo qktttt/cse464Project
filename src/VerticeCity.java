@@ -6,6 +6,7 @@ public class VerticeCity {
 	public double y;
 	public ArrayList<VerticeCity> neighbors;
 	public VerticeCity parent;
+	public double distanceToSource;
 	public String verticeName; // for each verticeCity, this value should be unique.
 	VerticeCity(double x, double y, String verticeName) {
 		this.x = x;

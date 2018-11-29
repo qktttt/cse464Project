@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SPCity {
 
@@ -213,6 +214,10 @@ public class SPCity {
             result.add(new SimplePoint(each.getValue().x, each.getValue().y));
         }
         return result;
+    }
+
+    public ArrayList<RA> getRA() {
+        return restrictiveAreas;
     }
 
 	public static void main(String[] args) throws FileNotFoundException {

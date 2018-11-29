@@ -42,7 +42,7 @@ public class GUITest {
 				//test draw; WILL BE DELETE
 				g.drawLine(100, 100, 200, 100);
 				g.setColor(Color.RED);
-				g.drawArc(100, 100, 100, 100, 40, 40);
+				g.drawArc(50, 50, 100, 100, 0, 45);
 				g.setColor(Color.CYAN);
 				g.drawArc(200, 200, 300, 300, 0, 90);
 			}

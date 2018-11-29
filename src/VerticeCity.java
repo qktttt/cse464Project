@@ -4,18 +4,22 @@ public class VerticeCity {
 	public static int number = 0;
 	public double x;
 	public double y;
-	public ArrayList<VerticeCity> neighbors;
+	public ArrayList<CityRoad> neighbors;
 	public VerticeCity parent;
-	public double distanceToSource;
+	public double distance;
 	public String verticeName; // for each verticeCity, this value should be unique.
-	VerticeCity(double x, double y, String verticeName) {
+
+	public VerticeCity(double x, double y, String verticeName) {
 		this.x = x;
 		this.y = y;
-		neighbors = new ArrayList<VerticeCity>();
+		this.verticeName = verticeName;
+		neighbors = new ArrayList<CityRoad>();
 	}
 
-	VerticeCity(double x, double y) {
-		VerticeCity(x, y, "default-point-" + number);
+	public VerticeCity(double x, double y) {
+		this.x = x;
+		this.y = y;
+		this.verticeName = "default-point: " + number;
 		number++;
 	}
 
@@ -23,7 +27,23 @@ public class VerticeCity {
 		return verticeName.hashCode();
 	}
 
+
+	public int compare(VerticeCity other) {
+		return (int)(Math.round(this.distance - other.distance));
+	}
+
 	public boolean equals(Object other) {	
-		return verticeName.hashCode() == other.hashCode();
+		VerticeCity second = (VerticeCity)other;
+		return verticeName.hashCode() == second.verticeName.hashCode();
+	}
+}
+
+class CityRoad {
+	VerticeCity adjPoint;
+	boolean isTouchRA;
+	double distance;
+	public CityRoad(VerticeCity newOne, double distance) {
+		this.adjPoint = newOne;
+		this.distance = distance;
 	}
 }

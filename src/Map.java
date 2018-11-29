@@ -10,7 +10,8 @@ public class Map {
 	 * @param y the y coordinate of the center point
 	 */
 	public Map(double x, double y) {
-		station.setLocation(x, y);
+		station.x = x;
+		station.y = y;
 	}
 
 	/**

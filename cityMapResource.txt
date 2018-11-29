@@ -1,0 +1,46 @@
+// Ra-x Ra-y Ra-radius
+1 1 1
+1 1 1
+
+// VerticeName vertice-X vertice-Y
+vertice1 10 10
+vertice2 30 10
+vertice3 50 10
+vertice4 10 20
+vertice5 30 20
+vertice6 50 20
+vertice7 10 30
+vertice8 30 30
+vertice9 50 30
+
+// Start End Distance
+vertice1 vertice2 1
+vertice1 vertice4 11
+vertice2 vertice1 4
+vertice2 vertice3 1
+vertice2 vertice5 11
+vertice3 vertice2 4
+vertice3 vertice6 1
+vertice4 vertice1 22
+vertice4 vertice5 11
+vertice4 vertice7 22
+vertice5 vertice4 11
+vertice5 vertice6 11
+vertice5 vertice8 22
+vertice5 vertice2 22
+vertice6 vertice3 8
+vertice6 vertice5 11
+vertice6 vertice9 1
+vertice7 vertice8 22
+vertice7 vertice4 4
+vertice8 vertice7 1
+vertice8 vertice9 22
+vertice8 vertice5 11
+vertice9 vertice8 1
+vertice9 vertice6 4
+
+// RiverName River-x River-y
+// One Side
+// Another Side
+
+

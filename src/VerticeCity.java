@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+// this class actually means the vertice
+// of the graph, the vertice also have a lot of edge point out to
+// other adjacent vertices
+// vertice got x, got y, and distance to the source, and the
+// supposed best parent to reach the source with minimum distance.
 public class VerticeCity {
 	public static int number = 0;
 	public double x;
@@ -38,11 +43,13 @@ public class VerticeCity {
 	}
 }
 
+// this means the edge in a graph
 class CityRoad {
 	VerticeCity adjPoint;
-	boolean isTouchRA;
 	double distance;
-	public CityRoad(VerticeCity newOne, double distance) {
+	public boolean isReal;
+	public CityRoad(VerticeCity newOne, double distance, boolean real) {
+		isReal = real;
 		this.adjPoint = newOne;
 		this.distance = distance;
 	}

@@ -1,9 +1,4 @@
 // Ra-x Ra-y Ra-radiu
-300 300 20
-500 500 80
-200 400 70
-200 300 100
-200 600 150
 
 // VerticeName vertice-X vertice-Y
 vertice1 100 100
@@ -42,13 +37,6 @@ vertice33 600 300
 vertice34 600 400
 vertice35 600 500
 vertice36 600 600
-vertice37 700 300
-vertice38 700 400
-vertice39 800 200
-vertice40 800 300
-vertice41 800 400
-vertice42 900 200
-vertice43 900 300
 
 // Start End Distance
 vertice1 vertice2 123
@@ -147,7 +135,7 @@ vertice27 vertice33 118
 vertice28 vertice27 127
 vertice28 vertice29 105
 vertice28 vertice22 133
-vertice28 vertice34 121
+vertice28 vertice34 102
 vertice29 vertice28 131
 vertice29 vertice30 121
 vertice29 vertice23 106
@@ -155,7 +143,7 @@ vertice29 vertice35 121
 vertice30 vertice29 121
 vertice30 vertice24 104
 vertice30 vertice36 121
-vertice31 vertice32 112
+vertice31 vertice32 127
 vertice31 vertice25 124
 vertice32 vertice31 144
 vertice32 vertice33 142
@@ -171,29 +159,8 @@ vertice35 vertice36 131
 vertice35 vertice29 144
 vertice36 vertice35 123
 vertice36 vertice30 123
-vertice33 vertice37 0
-vertice37 vertice33 180
-vertice37 vertice38 120
-vertice38 vertice37 120
-vertice37 vertice40 130
-vertice40 vertice47 130
-vertice38 vertice41 127
-vertice41 vertice38 127
-vertice40 vertice41 135
-vertice41 vertice40 135
-vertice39 vertice40 112
-vertice40 vertice39 112
-vertice39 vertice42 145
-vertice42 vertice39 145
-vertice42 vertice43 112
-vertice43 vertice42 112
-vertice40 vertice43 123
-vertice43 vertice40 123
 
-// RiverName River-x River-y width length
+// RiverName River-x River-y
 // One Side
 // Another Side
-river1 635 100 30 500
-vertice31 vertice32 vertice33 vertice34 vertice35 vertice36
-vertice37 vertice38
 

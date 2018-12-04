@@ -3,19 +3,29 @@ import java.util.ArrayList;
 
 public class Map {
 	ArrayList<RA> RArea = new ArrayList<RA>();
-	Vertice station = new Vertice(0, 0);
+	ArrayList<Line> lines = new ArrayList<Line>();
+	ArrayList<Arc> arcs = new ArrayList<Arc>();
+	Point station = new Point();
+	Line line;
+
 	/**
 	 * Construct qnd initialize a Map length as 20
 	 * @param x the x coordinate of the center point
 	 * @param y the y coordinate of the center point
 	 */
 	public Map(double x, double y) {
-		station.x = x;
-		station.y = y;
+		station.setLocation(x, y);
 	}
 
+
+	public Map(ArrayList<RA> RArea, Line line) {
+		this.RArea = RArea;
+		this.line = line;
+	}
+
+
 	/**
-	 * 
+	 *
 	 * @param x, the x coordinate of the restricted area
 	 * @param y, the y coordinate of the restricted area
 	 * @param radius, the radius of the restricted area
@@ -24,5 +34,13 @@ public class Map {
 		RA RestritedAread = new RA(x, y, radius);
 		RArea.add(RestritedAread);
 	}
-	
+
+
+	public void addArc() {
+
+	}
+
+	public void addLine() {
+
+	}
 }

@@ -1,22 +1,32 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.*;
+import java.awt.*;
 
+// this class will read the cityMapResource.txt
+// and then create a graph
+// the object of this class will support
+// the direction from a vertice to another vertice
+// and also avoid going into the restriction area.
 public class SPCity {
-
+    ArrayList<River> allRivers;
     HashMap<String, VerticeCity> allPointsOfRoad;
     ArrayList<RA> restrictiveAreas;
     ArrayList<SimplePoint> pointsInRA;
     ArrayList<SimpleEdge> edgeTouchRA;
+    HashMap<String, VerticeCity> allCopy;
 
     public SPCity() throws FileNotFoundException {
         allPointsOfRoad = new HashMap<>();
+        allRivers = new ArrayList<>();
         restrictiveAreas = new ArrayList<RA>();
-        LoadMap("cityMapResource.txt");
         pointsInRA = new ArrayList<>();
         edgeTouchRA = new ArrayList<>();
+        allCopy = new HashMap<>();
+        LoadMap("cityMapResource.txt");
     }
 
     public void LoadMap(String dataFileName) throws FileNotFoundException {
@@ -41,7 +51,6 @@ public class SPCity {
                     Double.parseDouble(readCur.next()),
                     Double.parseDouble(readCur.next()));
             restrictiveAreas.add(newOne);
-            System.out.printf("add new RA (%f, %f) r = %f\n", newOne.x, newOne.y, newOne.radius);
         }
 
         // load the vertice
@@ -53,15 +62,19 @@ public class SPCity {
             String name = readCur.next();
             double x = Double.parseDouble(readCur.next());
             double y = Double.parseDouble(readCur.next());
-            if (isPointInRa(x, y)) pointsInRA.add(new SimplePoint(x, y));
+
+            VerticeCity newOne = new VerticeCity(x, y, name);
+            allCopy.put(name, newOne);
+            if (isPointInRa(x, y)) pointsInRA.add(new SimplePoint(x, y, name));
             else {
-                allPointsOfRoad.put(name, new VerticeCity(x, y, name));
-                System.out.printf("add new point %s (%f, %f)\n", name, x, y);
+                allPointsOfRoad.put(name, newOne);
             }
         }
 
         // load the road
         reader.nextLine();
+        int total = 0;
+        int valid = 0;
         while (true) {
             String curLine = reader.nextLine();
             if (curLine.isEmpty()) break;
@@ -69,25 +82,64 @@ public class SPCity {
             String start = readCur.next();
             String end = readCur.next();
             Double distance = Double.parseDouble(readCur.next());
-            VerticeCity a = allPointsOfRoad.get(start);
-            VerticeCity b = allPointsOfRoad.get(end);
-            if (a == null || b == null) continue;
-            if (isEdgeInRa(a.x, a.y, b.x, b.y)) edgeTouchRA.add(new SimpleEdge(a.x, a.y, b.x, b.y, distance));
-            else a.neighbors.add(new CityRoad(b, distance));
-            System.out.printf("add new road %s(%f, %f)->%s(%f, %f), distance: %f\n", start, a.x, a.y, end, b.x, b.y, distance);
+            VerticeCity a = allCopy.get(start);
+            VerticeCity b = allCopy.get(end);
+            if (a == null || b == null) {
+                System.out.println(123123123);
+                continue;
+            }
+            if (isEdgeInRa(a.x, a.y, b.x, b.y)) {
+                edgeTouchRA.add(new SimpleEdge(a.x, a.y, b.x, b.y, distance));
+                System.out.printf("(%f, %f) -> (%f, %f)\n", a.x, a.y, b.x, b.y);
+            }
+            else {
+                valid++;
+                a.neighbors.add(new CityRoad(b, distance, true));
+                //System.out.printf("add new road %s(%f, %f)->%s(%f, %f), " +
+                //        "distance: %f\n", start, a.x, a.y, end, b.x, b.y, distance);
+            }
+            total++;
         }
+        System.out.println(total + " " + valid);
 
         // load the river information
         reader.nextLine();
         reader.nextLine();
         reader.nextLine();
         while (true) {
-            String curLine1 = reader.nextLine();
-            if (curLine1.isEmpty()) break;
-            String cueLine2 = reader.nextLine();
-            String curLine3 = reader.nextLine();
             ArrayList<VerticeCity> oneSide = new ArrayList<>();
             ArrayList<VerticeCity> anotherSide = new ArrayList<>();
+            String curLine1 = reader.nextLine();
+            if (curLine1.isEmpty()) break;
+            Scanner cur = new Scanner(curLine1);
+            System.out.println("***" + curLine1 + "***");
+            String name = cur.next();
+            double x = cur.nextInt(), y = cur.nextInt(),
+                    width = cur.nextInt(), length = cur.nextInt();
+            allRivers.add(new River(name, x, y, width, length));
+
+            String curLine2 = reader.nextLine();
+            cur.close();
+            cur = new Scanner(curLine2);
+            while(cur.hasNext())
+                oneSide.add(allCopy.get(cur.next()));
+            cur.close();
+            String curLine3 = reader.nextLine();
+            cur = new Scanner(curLine3);
+            while(cur.hasNext())
+                anotherSide.add(allCopy.get(cur.next()));
+            cur.close();
+            for(VerticeCity each : oneSide) {
+                for(VerticeCity eachAnotherSide : anotherSide) {
+                    if(!isEdgeInRa(each.x, each.y, eachAnotherSide.x, eachAnotherSide.y)) {
+                        double distance = Math.hypot(each.x - eachAnotherSide.x,
+                                each.y - eachAnotherSide.y);
+                        each.neighbors.add(new CityRoad(eachAnotherSide,
+                                distance, false));
+                        eachAnotherSide.neighbors.add(new CityRoad(each, distance, false));
+                    }
+                }
+            }
         }
 
 
@@ -127,8 +179,11 @@ public class SPCity {
             double distance = Math.hypot(each.x - intersectedX, each.y - intersectedY);
             // the accuray is 0.0001, prevent the high accuray of double computation
             // affect the judgement for the intersection
+            double leftX = Math.min(x1, x2);
+            double rightX = x1 + x2 - leftX;
             if (distance < each.radius
-                    && (intersectedX - x1) * (intersectedX - x2) - 0 < 0.0001)
+                    || (isPointInRa(x1, y1)||isPointInRa(x2, y2)) ||
+                    (leftX < each.x - each.radius && rightX > each.x + each.radius))
                 return true;
         }
         return false;
@@ -136,12 +191,12 @@ public class SPCity {
 
     public Stack<VerticeCity> findShortestPath(String start, String end) {
         // this actually require the dijkstra algorithm
-        System.out.println("size of map is: " + allPointsOfRoad.size());
+        // System.out.println("size of map is: " + allPointsOfRoad.size());
         Stack<VerticeCity> result = new Stack<>();
         VerticeCity from = allPointsOfRoad.get(start);
         VerticeCity to = allPointsOfRoad.get(end);
         if (from == null || to == null) {
-            System.out.printf("the path from %s to %s doesn't exist\n", start, end);
+            // System.out.printf("the path from %s to %s doesn't exist\n", start, end);
             return result;
         }
         // run the djikstra algorithm to get the result;
@@ -167,7 +222,6 @@ public class SPCity {
         while (!vertices.isEmpty()) {
             VerticeCity curOne = vertices.poll();
             if (curOne == null) break;
-            System.out.printf("%s : %f\n", curOne.verticeName, curOne.distance);
             for (CityRoad each : curOne.neighbors) {
                 relax(curOne, each.adjPoint, each.distance);
                 boolean a = vertices.remove(each.adjPoint);
@@ -190,29 +244,39 @@ public class SPCity {
         }
     }
 
+    // print out the road from a vertice to another vertice
+    // with minimum distance
     public void getPath(String start, String end) {
         Stack<VerticeCity> tmp = findShortestPath(start, end);
         while (!tmp.isEmpty())
             System.out.println(tmp.pop().verticeName);
     }
 
+    // get all edges in the graph
     public ArrayList<SimpleEdge> getAllEdge() {
-        ArrayList<SimpleEdge> result = (ArrayList<SimpleEdge>) getAllEdge().clone();
-        for (Map.Entry<String, VerticeCity> each : allPointsOfRoad.entrySet()) {
+        ArrayList<SimpleEdge> result = new ArrayList<>();
+        for(int i = 0; i < edgeTouchRA.size(); i++) result.add(edgeTouchRA.get(i));
+        for (Map.Entry<String, VerticeCity> each : allCopy.entrySet()) {
             for (CityRoad eachEdge : each.getValue().neighbors) {
-                VerticeCity from = each.getValue();
-                VerticeCity to = eachEdge.adjPoint;
-                result.add(new SimpleEdge(from.x, from.y, to.x, to.y, eachEdge.distance));
+                if(eachEdge.isReal) {
+                    VerticeCity from = each.getValue();
+                    VerticeCity to = eachEdge.adjPoint;
+                    result.add(new SimpleEdge(from.x, from.y, to.x, to.y, eachEdge.distance));
+                }
             }
         }
+        System.out.println(result.size());
         return result;
     }
 
+    // get all points in the graph
     public ArrayList<SimplePoint> getAllPoint() {
-        ArrayList<SimplePoint> result = (ArrayList<SimplePoint>) pointsInRA.clone();
-        for (Map.Entry<String, VerticeCity> each : allPointsOfRoad.entrySet()) {
-            result.add(new SimplePoint(each.getValue().x, each.getValue().y));
+        ArrayList<SimplePoint> result = new ArrayList<>();
+        for(int i = 0; i < pointsInRA.size(); i++) result.add(pointsInRA.get(i));
+        for (Map.Entry<String, VerticeCity> each : allCopy.entrySet()) {
+            result.add(new SimplePoint(each.getValue().x, each.getValue().y, each.getValue().verticeName));
         }
+
         return result;
     }
 
@@ -220,13 +284,94 @@ public class SPCity {
         return restrictiveAreas;
     }
 
-	public static void main(String[] args) throws FileNotFoundException {
-        SPCity newOne = new SPCity();
-        newOne.getPath("vertice1", "vertice7");
+    public ArrayList<River> getRivers() {
+        return allRivers;
     }
 
+	public static void main(String[] args) throws FileNotFoundException {
+        /*
+        SPCity newOne = new SPCity();
+        long startTime = System.currentTimeMillis();
+        int times = Integer.parseInt(args[0]);
+        System.out.println("Runnign times: " + times);
+        for(int i = 0; i < times; i++)
+            newOne.findShortestPath("vertice1", "vertice36");
+        long endTime = System.currentTimeMillis();
+        System.out.println("Processing time: " + (endTime - startTime) + "millseconds");
+        */
+        SPCity newOne = new SPCity();
+        spCity(newOne);
+    }
+
+    // this is the method creating the GUI
+    // to show the best route from a vertice to another vertice
+    public static void spCity(SPCity cityMap) {
+        ArrayList<SimpleEdge> street = cityMap.getAllEdge();
+        ArrayList<RA> restrictedAreas = cityMap.getRA();
+        ArrayList<SimplePoint> allPoint = cityMap.getAllPoint();
+
+        JFrame CurrentMap = new JFrame();
+        CurrentMap.setTitle("464 Project, city");
+        CurrentMap.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        CurrentMap.setSize(1000, 1000);
+
+        JPanel graphics = new JPanel() {
+            @Override
+            public void paint(Graphics g) {
+                //draw all the restricted area
+                Stack<VerticeCity> shortestPath = cityMap.findShortestPath("vertice1", "vertice30");
+                System.out.println("size of stack: " + shortestPath.size());
+                Graphics2D g2d = (Graphics2D)g.create();
+
+                for(River each : cityMap.getRivers()) {
+                    g2d.setColor(Color.blue);
+                    g2d.fillRect((int)each.x, (int)each.y, (int)each.width, (int)each.length);
+                }
+
+                for (RA circle : restrictedAreas) {
+                    g2d.setColor(Color.cyan);
+                    g2d.fillArc((int) (circle.x-circle.radius), (int) (circle.y-circle.radius),
+                            (int) circle.radius * 2, (int) circle.radius * 2, 0, 360);
+                }
+
+                for(SimplePoint each : allPoint) {
+                    g2d.setColor(Color.black);
+                    g2d.fillOval((int)each.x-5, (int)each.y-5, 10, 10);
+                    g2d.drawString("v" + each.name.substring(6), (int)each.x, (int)each.y);
+                }
+
+                //draw all the streets
+                for (SimpleEdge edges : street) {
+                    g2d.drawLine((int) edges.x1, (int) edges.y1, (int) edges.x2, (int) edges.y2);
+                }
+
+                if(shortestPath.isEmpty())  {
+                    System.out.println("fucking awesome");
+                    //return;
+                }
+                if(shortestPath.isEmpty()) return;
+                Point pt1 = new Point((int) shortestPath.peek().x, (int) shortestPath.peek().y);
+                shortestPath.pop();
+                //draw the shortest path
+                while (!shortestPath.isEmpty()) {
+                    Point pt2 = new Point((int) shortestPath.peek().x, (int) shortestPath.peek().y);
+
+                    g2d.setStroke(new BasicStroke(4.f));
+                    g2d.setColor(Color.RED);
+                    g2d.drawLine( (int)pt1.x, (int)pt1.y, (int)pt2.x, (int)pt2.y);
+                    System.out.println(pt1 + " " + pt2 + " ");
+                    pt1 = pt2;
+                    shortestPath.pop();
+                }
+            }
+        };
+        CurrentMap.getContentPane().add(graphics);
+        CurrentMap.setVisible(true);
+    }
 }
 
+// these two classese belows are used to express
+// vertice and edge position information for GUI
 class SimpleEdge{
     double x1,y1,x2,y2,distance;
     public SimpleEdge(double x1, double y1, double x2, double y2, double distance) {
@@ -239,9 +384,23 @@ class SimpleEdge{
 }
 
 class SimplePoint {
+    String name;
     double x, y;
-    public SimplePoint (double x, double y) {
+    public SimplePoint (double x, double y, String name) {
+        this.name = name;
         this.x = x;
         this.y = y;
+    }
+}
+
+class River {
+    String name;
+    double x, y, width, length;
+    public River(String name, double x, double y, double width, double length) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.length = length;
     }
 }

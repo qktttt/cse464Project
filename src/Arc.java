@@ -5,9 +5,9 @@ public class Arc {
 	int radius;
 	int startAngel;
 	int arcAngel;
-	
+
 	/**
-	 * 
+	 *
 	 * @param x x coordinate of the center point
 	 * @param y y coordinate of the center point
 	 * @param radius radius of the arc

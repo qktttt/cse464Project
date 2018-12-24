@@ -3,7 +3,6 @@
 500 500 80
 200 400 70
 200 300 100
-200 600 150
 
 // VerticeName vertice-X vertice-Y
 vertice1 100 100

@@ -319,7 +319,7 @@ public class SPCity {
             @Override
             public void paint(Graphics g) {
                 //draw all the restricted area
-                Stack<VerticeCity> shortestPath = cityMap.findShortestPath("vertice1", "vertice30");
+                Stack<VerticeCity> shortestPath = cityMap.findShortestPath("vertice1", "vertice35");
                 System.out.println("size of stack: " + shortestPath.size());
                 Graphics2D g2d = (Graphics2D)g.create();
 
